@@ -30,6 +30,30 @@ class test_api_charge_create(unittest.TestCase):
         # verify description
         assert response['description'] == description, "Description in response: %s. Expecting %s" % (response['description'], description)
 
+    def test_charge_create_invalid_api_key(self):
+        # Test Case: invalid api key
+        amount = 1000
+        currency = "usd"
+        source = "tok_visa"
+        receipt_email = "testonly@testonly.com"
+        description = "for testing purposes only"
+
+        api_key = "invalid_key"
+        charges = charge(api_key)
+        response = charges.post_charge(amount, currency,source,receipt_email,description)
+        # verify error message received
+        # Invalid API Key provided: invalid_key
+        assert "Invalid API Key provided: %s" % api_key in response
+
+    def test_charge_create_missing_field_amount(self):
+        # Test Case: do not pass amount in payload
+        api_key = api_credentials().get_api_key()
+        charges = charge(api_key)
+        response = charges.post_charge_negative_missing_amount()
+        # verify error message received
+        # Request req_rBFrzOF0P7lzqZ: Missing required param: amount.
+        assert "Missing required param: amount." in response
+
     def test_charge_create_negative_amount(self):
         # Test Case: negative amount
         amount = -10
@@ -76,8 +100,9 @@ class test_api_charge_create(unittest.TestCase):
         assert "Invalid email address: %s" % receipt_email in response
 
     """Other test cases to perform:
-    - missing API key, invalid API key, null API key
-    - missing required fields eg. do not pass amount node in payload, ...
+    - null API key
+    - other missing required fields eg. do not pass currency param in payload, ...
+    - extra param that is not supported
     - too big amount eg. 99999999999999
     - upper cases on currency and source
     - invalid currency
