@@ -76,7 +76,7 @@ class test_api_charge_create(unittest.TestCase):
         assert "Invalid email address: %s" % receipt_email in response
 
     """Other test cases to perform:
-    - missing API key
+    - missing API key, invalid API key, null API key
     - missing required fields eg. do not pass amount node in payload, ...
     - too big amount eg. 99999999999999
     - upper cases on currency and source
